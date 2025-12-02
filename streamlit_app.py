@@ -661,8 +661,15 @@ def display_movie_details(details):
     st.markdown(f"*{overview}*")
 
 
-def display_movie_card(movie, index, recommender):
-    """Display enhanced movie card with poster and signals."""
+def display_movie_card(movie, index, recommender, track="default"):
+    """Display enhanced movie card with poster and signals.
+
+    Args:
+        movie: Movie object with recommendation data
+        index: Display index (1-based)
+        recommender: Recommender instance for poster lookup
+        track: Track identifier for unique keys ("entity", "mood", or "default")
+    """
     movie_title = movie.movie_title
     year = getattr(movie, 'year', 'N/A')
     overview = getattr(movie, 'overview', '')
@@ -698,17 +705,18 @@ def display_movie_card(movie, index, recommender):
         st.markdown(f"**Score:** {final_score:.2f}")
 
     with col_actions:
-        # Watchlist button - use hash for unique key to avoid duplicates in dual-track mode
+        # Watchlist button - include track in key to ensure uniqueness across dual-track tabs
         item = f"{movie_title} ({year})"
         is_in_watchlist = item in st.session_state.watchlist
         btn_label = "❤️" if is_in_watchlist else "🤍"
-        unique_key = f"wl_{hash(f'{movie_title}_{year}_{index}')}_{index}"
+        unique_key = f"wl_{track}_{index}_{hash(movie_title)}"
         if st.button(btn_label, key=unique_key, help="Add to watchlist"):
             toggle_watchlist(movie_title, year)
             st.rerun()
 
     # Expandable signal breakdown
-    with st.expander("🔍 Why this recommendation?"):
+    expander_key = f"exp_{track}_{index}_{hash(movie_title)}"
+    with st.expander("🔍 Why this recommendation?", key=expander_key):
         st.markdown(render_signal_bars(movie), unsafe_allow_html=True)
         st.caption("These 6 signals from our hybrid AI architecture determined this match.")
 
@@ -975,17 +983,17 @@ def page_search():
                 with tab1:
                     st.caption("Content-focused (actors, themes, genres)")
                     for i, movie in enumerate(result.entity_track[:top_n], 1):
-                        display_movie_card(movie, i, recommender)
+                        display_movie_card(movie, i, recommender, track="entity")
 
                 with tab2:
                     st.caption("Theme/sentiment-focused")
                     for i, movie in enumerate(result.mood_track[:top_n], 1):
-                        display_movie_card(movie, i, recommender)
+                        display_movie_card(movie, i, recommender, track="mood")
 
             else:
                 st.markdown(f"### 🎬 Top {min(top_n, len(result.recommendations))} Recommendations")
                 for i, movie in enumerate(result.recommendations[:top_n], 1):
-                    display_movie_card(movie, i, recommender)
+                    display_movie_card(movie, i, recommender, track="single")
 
             # Movie details lookup
             st.markdown("---")
