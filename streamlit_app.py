@@ -18,6 +18,7 @@ import pandas as pd
 import re
 import os
 import random
+import base64
 
 # Page config
 st.set_page_config(
@@ -174,27 +175,90 @@ def validate_email(email):
     return re.match(pattern, email) is not None
 
 def render_kineto_title():
-    """Render the animated Kineto title."""
+    """Render the animated Kineto title with fly-in animation."""
     st.markdown("""
-        <div class="kineto-title">
-            <span class="kineto-letter">K</span>
-            <span class="kineto-letter">I</span>
-            <span class="kineto-letter">N</span>
-            <span class="kineto-letter">E</span>
-            <span class="kineto-letter">T</span>
-            <span class="kineto-letter">O</span>
+        <style>
+        @keyframes flyLeft {
+            0%{opacity:0;transform:translateX(-100px) rotate(-20deg);}
+            80%{opacity:1;transform:translateX(10px) rotate(2deg);}
+            100%{opacity:1;transform:translateX(0) rotate(0);}
+        }
+        @keyframes flyRight {
+            0%{opacity:0;transform:translateX(100px) rotate(20deg);}
+            80%{opacity:1;transform:translateX(-10px) rotate(-2deg);}
+            100%{opacity:1;transform:translateX(0) rotate(0);}
+        }
+        @keyframes flyTop {
+            0%{opacity:0;transform:translateY(-100px) rotate(10deg);}
+            80%{opacity:1;transform:translateY(10px) rotate(-2deg);}
+            100%{opacity:1;transform:translateY(0) rotate(0);}
+        }
+
+        .title-container {
+            text-align:center;
+            font-size:48px;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .title-letter {
+            display:inline-block;
+            color:#E50914;
+            opacity:0;
+        }
+
+        .title-letter:nth-child(1){ animation:flyLeft .8s ease forwards .1s; }
+        .title-letter:nth-child(2){ animation:flyRight .8s ease forwards .3s; }
+        .title-letter:nth-child(3){ animation:flyTop .8s ease forwards .5s; }
+        .title-letter:nth-child(4){ animation:flyLeft .8s ease forwards .7s; }
+        .title-letter:nth-child(5){ animation:flyRight .8s ease forwards .9s; }
+        .title-letter:nth-child(6){ animation:flyTop .8s ease forwards 1.1s; }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+        <div class="title-container">
+            <span class="title-letter">K</span>
+            <span class="title-letter">I</span>
+            <span class="title-letter">N</span>
+            <span class="title-letter">E</span>
+            <span class="title-letter">T</span>
+            <span class="title-letter">O</span>
         </div>
     """, unsafe_allow_html=True)
 
 def render_logo():
-    """Render the Kineto logo."""
+    """Render the Kineto logo, perfectly centered."""
     logo_path = "kineto_logo.png"
+
     if os.path.exists(logo_path):
-        col1, col2, col3 = st.columns([1, 1, 1])
-        with col2:
-            st.image(logo_path, width=200)
+        # Read image and encode as base64 so we can control alignment via HTML/CSS
+        with open(logo_path, "rb") as f:
+            logo_base64 = base64.b64encode(f.read()).decode()
+
+        st.markdown("""
+            <style>
+                .logo-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-top: 20px;
+                    margin-bottom: 10px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
+        st.markdown(
+            f"""
+            <div class="logo-container">
+                <img src="data:image/png;base64,{logo_base64}" width="200">
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     else:
         st.markdown("<h1 style='text-align: center;'>🎬</h1>", unsafe_allow_html=True)
+
 
 def navigate_to(page):
     """Navigate to a different page."""
@@ -407,7 +471,7 @@ def page_login():
             if st.button("Log In", type="primary", use_container_width=True, disabled=not can_login):
                 st.session_state.user_info['email'] = email
                 st.session_state.logged_in = True
-                navigate_to('profile')
+                navigate_to('search')
 
 # =============================================================================
 # PAGE: PROFILE
