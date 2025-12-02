@@ -698,11 +698,12 @@ def display_movie_card(movie, index, recommender):
         st.markdown(f"**Score:** {final_score:.2f}")
 
     with col_actions:
-        # Watchlist button
+        # Watchlist button - use hash for unique key to avoid duplicates in dual-track mode
         item = f"{movie_title} ({year})"
         is_in_watchlist = item in st.session_state.watchlist
         btn_label = "❤️" if is_in_watchlist else "🤍"
-        if st.button(btn_label, key=f"wl_{index}_{movie_title[:10]}", help="Add to watchlist"):
+        unique_key = f"wl_{hash(f'{movie_title}_{year}_{index}')}_{index}"
+        if st.button(btn_label, key=unique_key, help="Add to watchlist"):
             toggle_watchlist(movie_title, year)
             st.rerun()
 
