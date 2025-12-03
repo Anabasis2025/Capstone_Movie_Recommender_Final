@@ -425,15 +425,20 @@ class SemanticTagExpander:
 
         # Choose which set to search
         if search_keywords:
-            all_items = self.all_keywords
-            all_items_list = self.all_keywords_list
+            all_items = self.all_keywords if self.all_keywords else set()
+            all_items_list = self.all_keywords_list if self.all_keywords_list else []
             find_similar_fn = self._find_similar_keywords
             item_type = "keywords"
         else:
-            all_items = self.all_tags
-            all_items_list = self.all_tags_list
+            all_items = self.all_tags if self.all_tags else set()
+            all_items_list = self.all_tags_list if self.all_tags_list else []
             find_similar_fn = self._find_similar_tags
             item_type = "tags"
+
+        # Early return if no items to search
+        if not all_items:
+            logger.warning(f"No {item_type} available for expansion of '{term}'")
+            return expanded
 
         # ALWAYS do substring matching for keywords (more robust than embeddings alone)
         if search_keywords:
