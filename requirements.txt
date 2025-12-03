@@ -1,5 +1,6 @@
 # =============================================================================
 # CAPSTONE MOVIE RECOMMENDER - Requirements
+# Cache bust: 2024-12-02-v2
 # =============================================================================
 #
 # IMPORTANT: Pinned versions for compatibility
