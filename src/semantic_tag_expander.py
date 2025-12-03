@@ -201,6 +201,40 @@ class SemanticTagExpander:
             'female protagonist', 'male protagonist', 'leading lady',
             'leading man', 'hero', 'heroine', 'main character'
         ],
+
+        # Emotional/situational concepts (for situation+outcome queries)
+        'broke up': [
+            'breakup', 'break up', 'ex-girlfriend', 'ex-boyfriend', 'ex-wife', 'ex-husband',
+            'divorce', 'separation', 'heartbreak', 'heartbroken', 'dumped', 'rejected',
+            'relationship', 'failed relationship', 'love lost', 'moving on', 'starting over',
+            'single', 'lonely', 'loneliness', 'healing', 'recovery', 'new beginning'
+        ],
+        'breakup': [
+            'breakup', 'break up', 'ex-girlfriend', 'ex-boyfriend', 'ex-wife', 'ex-husband',
+            'divorce', 'separation', 'heartbreak', 'heartbroken', 'dumped', 'rejected',
+            'relationship', 'failed relationship', 'love lost', 'moving on', 'starting over'
+        ],
+        'heartbreak': [
+            'heartbreak', 'heartbroken', 'broken heart', 'love lost', 'rejection', 'betrayal',
+            'grief', 'loss', 'sadness', 'depression', 'loneliness', 'healing', 'moving on'
+        ],
+        'cheer up': [
+            'comedy', 'funny', 'humor', 'humorous', 'hilarious', 'laugh', 'laughter',
+            'feel-good', 'feel good', 'uplifting', 'heartwarming', 'happy', 'happiness',
+            'joy', 'cheerful', 'optimistic', 'hopeful', 'inspiring', 'fun', 'lighthearted'
+        ],
+        'cheer': [
+            'comedy', 'funny', 'humor', 'uplifting', 'heartwarming', 'happy', 'joy',
+            'cheerful', 'optimistic', 'hopeful', 'inspiring', 'fun', 'lighthearted'
+        ],
+        'feel good': [
+            'feel-good', 'feel good', 'heartwarming', 'uplifting', 'inspiring', 'hopeful',
+            'comedy', 'romantic comedy', 'happy ending', 'optimistic', 'positive', 'joyful'
+        ],
+        'feel better': [
+            'feel-good', 'uplifting', 'heartwarming', 'inspiring', 'hopeful', 'comedy',
+            'healing', 'recovery', 'hope', 'optimistic', 'positive', 'comforting'
+        ],
     }
 
     def __init__(self, all_tags: List[str], all_keywords: Optional[List[str]] = None, models_dir: str = "models"):

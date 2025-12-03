@@ -3406,19 +3406,26 @@ class MovieRecommenderInteractiveV4:
                 if phrase_lower in OUTCOME_TO_GENRE:
                     outcome_genres.update(OUTCOME_TO_GENRE[phrase_lower])
 
+            # Flatten expansion dicts into lists for scoring
+            # situation_expansions/outcome_expansions are dicts: {term: [expanded_keywords]}
+            situation_keywords = [kw for exp_list in sit_out_expansions.get('situation_expansions', {}).values() for kw in exp_list]
+            outcome_tags = [tag for exp_list in sit_out_expansions.get('outcome_expansions', {}).values() for tag in exp_list]
+
             situation_outcome_data = {
                 'entity_nouns': sit_entity_nouns,
                 'situation_phrases': situation_phrases,
                 'outcome_phrases': outcome_phrases,
                 'outcome_genres': outcome_genres,
-                'situation_keywords': list(sit_out_expansions.get('situation_keywords', [])),
-                'outcome_tags': list(sit_out_expansions.get('outcome_tags', []))
+                'situation_keywords': situation_keywords,
+                'outcome_tags': outcome_tags
             }
             logger.info(f"   [SIT+OUT SCORING] Prepared situation_outcome_data:")
             logger.info(f"      entity_nouns: {sit_entity_nouns}")
             logger.info(f"      situation_phrases: {situation_phrases}")
             logger.info(f"      outcome_phrases: {outcome_phrases}")
             logger.info(f"      outcome_genres: {outcome_genres}")
+            logger.info(f"      situation_keywords ({len(situation_keywords)}): {situation_keywords[:10]}...")
+            logger.info(f"      outcome_tags ({len(outcome_tags)}): {outcome_tags[:10]}...")
 
         signal_scores = self.signal_fusion.compute_all_signals(
             candidate_movies=candidates,
@@ -3888,7 +3895,7 @@ class MovieRecommenderInteractiveV4:
             num_candidates=len(candidates),
             entity_track=entity_track,
             mood_track=mood_track,
-            dual_track_mode=bool(dual_track_mode)  # Convert string to bool for output
+            dual_track_mode=(dual_track_mode == "entity_mood")  # Only entity+mood shows dual-track UI
         )
 
         logger.info(f"\n{'='*60}")
