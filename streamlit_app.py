@@ -12,34 +12,6 @@ Enhanced Features:
 - Watchlist functionality
 """
 
-# =============================================================================
-# SPACY MODEL CHECK - Must run before any other imports that use spaCy
-# =============================================================================
-_spacy_status = "unknown"
-
-def ensure_spacy_model():
-    """Download spaCy model if not present. Required for HuggingFace Spaces."""
-    global _spacy_status
-    import subprocess
-    import sys
-    try:
-        import spacy
-        nlp = spacy.load('en_core_web_sm')
-        _spacy_status = f"loaded (spacy {spacy.__version__})"
-    except OSError as e:
-        _spacy_status = f"downloading... (error was: {e})"
-        try:
-            subprocess.check_call([sys.executable, '-m', 'spacy', 'download', 'en_core_web_sm'])
-            import spacy
-            spacy.load('en_core_web_sm')
-            _spacy_status = "downloaded and loaded"
-        except Exception as e2:
-            _spacy_status = f"FAILED: {e2}"
-    except Exception as e:
-        _spacy_status = f"ERROR: {e}"
-
-ensure_spacy_model()
-
 import streamlit as st
 import time
 import pandas as pd
@@ -47,7 +19,6 @@ import re
 import os
 import random
 import base64
-import uuid
 
 # Page config
 st.set_page_config(
@@ -690,15 +661,8 @@ def display_movie_details(details):
     st.markdown(f"*{overview}*")
 
 
-def display_movie_card(movie, index, recommender, track="default"):
-    """Display enhanced movie card with poster and signals.
-
-    Args:
-        movie: Movie object with recommendation data
-        index: Display index (1-based)
-        recommender: Recommender instance for poster lookup
-        track: Track identifier for unique keys ("entity", "mood", or "default")
-    """
+def display_movie_card(movie, index, recommender):
+    """Display enhanced movie card with poster and signals."""
     movie_title = movie.movie_title
     year = getattr(movie, 'year', 'N/A')
     overview = getattr(movie, 'overview', '')
@@ -734,11 +698,11 @@ def display_movie_card(movie, index, recommender, track="default"):
         st.markdown(f"**Score:** {final_score:.2f}")
 
     with col_actions:
-        # Watchlist button - use uuid for guaranteed uniqueness
+        # Watchlist button - use hash for unique key to avoid duplicates in dual-track mode
         item = f"{movie_title} ({year})"
         is_in_watchlist = item in st.session_state.watchlist
         btn_label = "❤️" if is_in_watchlist else "🤍"
-        unique_key = f"wl_{uuid.uuid4()}"
+        unique_key = f"wl_{hash(f'{movie_title}_{year}_{index}')}_{index}"
         if st.button(btn_label, key=unique_key, help="Add to watchlist"):
             toggle_watchlist(movie_title, year)
             st.rerun()
@@ -953,7 +917,6 @@ def page_search():
 
         # Debug info for troubleshooting
         with st.expander("🔧 Debug Info", expanded=False):
-            st.write(f"**spaCy status:** {_spacy_status}")
             st.write(f"**Recommendations count:** {len(result.recommendations) if result.recommendations else 0}")
             st.write(f"**Num candidates:** {getattr(result, 'num_candidates', 'N/A')}")
             st.write(f"**Dual track mode:** {getattr(result, 'dual_track_mode', False)}")
@@ -1012,17 +975,17 @@ def page_search():
                 with tab1:
                     st.caption("Content-focused (actors, themes, genres)")
                     for i, movie in enumerate(result.entity_track[:top_n], 1):
-                        display_movie_card(movie, i, recommender, track="entity")
+                        display_movie_card(movie, i, recommender)
 
                 with tab2:
                     st.caption("Theme/sentiment-focused")
                     for i, movie in enumerate(result.mood_track[:top_n], 1):
-                        display_movie_card(movie, i, recommender, track="mood")
+                        display_movie_card(movie, i, recommender)
 
             else:
                 st.markdown(f"### 🎬 Top {min(top_n, len(result.recommendations))} Recommendations")
                 for i, movie in enumerate(result.recommendations[:top_n], 1):
-                    display_movie_card(movie, i, recommender, track="single")
+                    display_movie_card(movie, i, recommender)
 
             # Movie details lookup
             st.markdown("---")

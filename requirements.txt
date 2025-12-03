@@ -1,6 +1,5 @@
 # =============================================================================
 # CAPSTONE MOVIE RECOMMENDER - Requirements
-# Cache bust: 2024-12-02-v2
 # =============================================================================
 #
 # IMPORTANT: Pinned versions for compatibility
@@ -33,9 +32,6 @@ sentence-transformers>=2.2.0
 spacy>=3.7.0
 nltk>=3.8.0
 
-# SpaCy model - required for HuggingFace Spaces (can't run `python -m spacy download`)
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
-
 # Collaborative filtering
 scikit-surprise==1.1.4
 
@@ -56,6 +52,6 @@ requests>=2.31.0
 streamlit>=1.30.0
 
 # =============================================================================
-# Post-install (local only - HF Spaces uses the wheel URL above):
+# Post-install:
 #   python -m spacy download en_core_web_sm
 # =============================================================================
