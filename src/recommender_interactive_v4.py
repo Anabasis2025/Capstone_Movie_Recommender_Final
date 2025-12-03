@@ -1209,16 +1209,26 @@ class MovieRecommenderInteractiveV4:
 
         # Check for multi-theme mode (no entities but 2+ theme groups detected)
         # BUT only if no entity nouns are present (otherwise use entity_mood)
+        # FALLBACK: If theme_groups is empty but original_themes has 2+, use original_themes
+        theme_groups = getattr(parsed_query, 'theme_groups', [])
+        original_themes = getattr(parsed_query, 'original_themes', [])
+
+        # If spaCy didn't detect groups but we have 2+ original themes, create groups from them
+        if len(theme_groups) < 2 and len(original_themes) >= 2:
+            # Each original theme becomes its own group
+            theme_groups = [[t] for t in original_themes[:2]]  # Use first 2 themes
+            parsed_query.theme_groups = theme_groups  # Update for downstream scoring
+            logger.info(f"   [MULTI-THEME FALLBACK] Created theme_groups from original_themes: {theme_groups}")
+
         has_multi_theme = (not has_entities and
                           not has_entity_noun and
-                          hasattr(parsed_query, 'theme_groups') and
-                          len(parsed_query.theme_groups) >= 2)
+                          len(theme_groups) >= 2)
 
         if has_multi_theme:
             # MULTI-THEME MODE: No entity, but multiple distinct theme groups
             logger.info(f"\n   MULTI-THEME MODE TRIGGERED:")
             logger.info(f"   - Theme Groups: {parsed_query.theme_groups}")
-            logger.info(f"   - Content Nouns: {parsed_query.content_nouns}")
+            logger.info(f"   - Content Nouns: {getattr(parsed_query, 'content_nouns', [])}")
             return "multi_theme"
 
         # If we have entity nouns (like "lead", "female"), use entity_mood mode
