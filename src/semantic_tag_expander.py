@@ -470,7 +470,7 @@ class SemanticTagExpander:
             item_type = "tags"
 
         # ALWAYS do substring matching for keywords (more robust than embeddings alone)
-        if search_keywords:
+        if search_keywords and all_items is not None:
             substring_matches = set()
 
             # Handle plural/singular variations
@@ -501,8 +501,11 @@ class SemanticTagExpander:
 
             if term_lower in mappings:
                 manual_items = mappings[term_lower]
-                # Only include items that exist in our dataset
-                matched_items = [item for item in manual_items if item in all_items]
+                # Only include items that exist in our dataset (if dataset available)
+                if all_items is not None:
+                    matched_items = [item for item in manual_items if item in all_items]
+                else:
+                    matched_items = manual_items  # Include all if no dataset to filter against
                 expanded.update(matched_items)
                 logger.info(f"Manual keyword expansion: '{term}' -> {len(matched_items)} {item_type}")
 
@@ -528,16 +531,17 @@ class SemanticTagExpander:
             else:
                 # Fallback to fuzzy matching if embedding fails
                 logger.info(f"Embedding expansion failed for '{term}' - using fuzzy fallback")
-                if term_lower in all_items:
-                    expanded.add(term_lower)
+                if all_items is not None:
+                    if term_lower in all_items:
+                        expanded.add(term_lower)
 
-                # Fuzzy matching for common variations
-                for item in all_items:
-                    if term_lower in item or item in term_lower:
-                        expanded.add(item)
+                    # Fuzzy matching for common variations
+                    for item in all_items:
+                        if term_lower in item or item in term_lower:
+                            expanded.add(item)
 
         # Always include exact match if it exists
-        if term_lower in all_items:
+        if all_items is not None and term_lower in all_items:
             expanded.add(term_lower)
 
         return expanded
