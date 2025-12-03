@@ -12,6 +12,22 @@ Enhanced Features:
 - Watchlist functionality
 """
 
+# =============================================================================
+# SPACY MODEL CHECK - Must run before any other imports that use spaCy
+# =============================================================================
+def ensure_spacy_model():
+    """Download spaCy model if not present. Required for HuggingFace Spaces."""
+    import subprocess
+    import sys
+    try:
+        import spacy
+        spacy.load('en_core_web_sm')
+    except OSError:
+        # Model not found - download it
+        subprocess.check_call([sys.executable, '-m', 'spacy', 'download', 'en_core_web_sm'])
+
+ensure_spacy_model()
+
 import streamlit as st
 import time
 import pandas as pd
