@@ -838,6 +838,17 @@ def get_situation_outcome_candidates(movies_df: pd.DataFrame,
     # =================================================================
     # STEP 3: Filter movies - must match BOTH situation AND outcome
     # =================================================================
+
+    # PRE-BUILD zero-shot tags lookup for O(1) access instead of O(n) DataFrame scans
+    # This is CRITICAL for performance - without it, 44k movies * 44k row scans = hang
+    zero_shot_lookup = {}
+    if zero_shot_tags_df is not None and not zero_shot_tags_df.empty:
+        for _, zst_row in zero_shot_tags_df.iterrows():
+            title_norm = zst_row.get('title_norm', '')
+            if title_norm:
+                zero_shot_lookup[title_norm] = zst_row
+        logger.info(f"   [SIT+OUT] Built zero-shot lookup with {len(zero_shot_lookup)} entries")
+
     def movie_matches_situation(row):
         """Check if movie matches situation via keywords or overview (with inflection variants)."""
         movie_keywords = row.get('keywords', None)
@@ -888,17 +899,17 @@ def get_situation_outcome_candidates(movies_df: pd.DataFrame,
                     if og.lower() in movie_genres:
                         return True
 
-        # Check zero-shot tags
-        if zero_shot_tags_df is not None and len(outcome_tags) > 0:
+        # Check zero-shot tags using PRE-BUILT lookup (O(1) instead of O(n) DataFrame scan)
+        if zero_shot_lookup and len(outcome_tags) > 0:
             # Normalize title for lookup
             title_norm = movie_title.lower().strip()
-            movie_row = zero_shot_tags_df[zero_shot_tags_df['title_norm'] == title_norm]
+            movie_row = zero_shot_lookup.get(title_norm)
 
-            if not movie_row.empty:
+            if movie_row is not None:
                 for tag in outcome_tags:
                     tag_col = tag.replace('-', ' ').replace('_', ' ')
-                    if tag_col in movie_row.columns:
-                        if movie_row[tag_col].values[0] > 0:
+                    if tag_col in movie_row.index:
+                        if movie_row[tag_col] > 0:
                             return True
 
         # Fallback: check if any outcome tag appears in overview
