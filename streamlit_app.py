@@ -15,16 +15,28 @@ Enhanced Features:
 # =============================================================================
 # SPACY MODEL CHECK - Must run before any other imports that use spaCy
 # =============================================================================
+_spacy_status = "unknown"
+
 def ensure_spacy_model():
     """Download spaCy model if not present. Required for HuggingFace Spaces."""
+    global _spacy_status
     import subprocess
     import sys
     try:
         import spacy
-        spacy.load('en_core_web_sm')
-    except OSError:
-        # Model not found - download it
-        subprocess.check_call([sys.executable, '-m', 'spacy', 'download', 'en_core_web_sm'])
+        nlp = spacy.load('en_core_web_sm')
+        _spacy_status = f"loaded (spacy {spacy.__version__})"
+    except OSError as e:
+        _spacy_status = f"downloading... (error was: {e})"
+        try:
+            subprocess.check_call([sys.executable, '-m', 'spacy', 'download', 'en_core_web_sm'])
+            import spacy
+            spacy.load('en_core_web_sm')
+            _spacy_status = "downloaded and loaded"
+        except Exception as e2:
+            _spacy_status = f"FAILED: {e2}"
+    except Exception as e:
+        _spacy_status = f"ERROR: {e}"
 
 ensure_spacy_model()
 
@@ -941,6 +953,7 @@ def page_search():
 
         # Debug info for troubleshooting
         with st.expander("🔧 Debug Info", expanded=False):
+            st.write(f"**spaCy status:** {_spacy_status}")
             st.write(f"**Recommendations count:** {len(result.recommendations) if result.recommendations else 0}")
             st.write(f"**Num candidates:** {getattr(result, 'num_candidates', 'N/A')}")
             st.write(f"**Dual track mode:** {getattr(result, 'dual_track_mode', False)}")
