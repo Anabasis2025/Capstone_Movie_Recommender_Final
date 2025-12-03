@@ -19,6 +19,7 @@ import re
 import os
 import random
 import base64
+import uuid
 
 # Page config
 st.set_page_config(
@@ -705,18 +706,17 @@ def display_movie_card(movie, index, recommender, track="default"):
         st.markdown(f"**Score:** {final_score:.2f}")
 
     with col_actions:
-        # Watchlist button - include track in key to ensure uniqueness across dual-track tabs
+        # Watchlist button - use uuid for guaranteed uniqueness
         item = f"{movie_title} ({year})"
         is_in_watchlist = item in st.session_state.watchlist
         btn_label = "❤️" if is_in_watchlist else "🤍"
-        unique_key = f"wl_{track}_{index}_{hash(movie_title)}"
+        unique_key = f"wl_{uuid.uuid4()}"
         if st.button(btn_label, key=unique_key, help="Add to watchlist"):
             toggle_watchlist(movie_title, year)
             st.rerun()
 
     # Expandable signal breakdown
-    expander_key = f"exp_{track}_{index}_{hash(movie_title)}"
-    with st.expander("🔍 Why this recommendation?", key=expander_key):
+    with st.expander("🔍 Why this recommendation?"):
         st.markdown(render_signal_bars(movie), unsafe_allow_html=True)
         st.caption("These 6 signals from our hybrid AI architecture determined this match.")
 
