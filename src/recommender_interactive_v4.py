@@ -2423,9 +2423,11 @@ class MovieRecommenderInteractiveV4:
                         if group2_matched:
                             theme_groups_matched += 1
 
-                        # Require BOTH theme groups to match
-                        # This ensures movies have signal for both themes (e.g., trauma AND humor)
-                        if theme_groups_matched < 2:
+                        # Require AT LEAST ONE theme group to match at candidate level
+                        # This lets more candidates through - scoring will prioritize movies matching both
+                        # Before: required both groups (too strict, only ~5 movies pass)
+                        # Now: require 1 group, scoring handles ranking those matching both themes higher
+                        if theme_groups_matched < 1:
                             return False, theme_groups_matched, theme_groups_matched
 
                     # =============================================================

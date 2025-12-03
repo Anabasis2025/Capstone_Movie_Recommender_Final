@@ -235,6 +235,46 @@ class SemanticTagExpander:
             'feel-good', 'uplifting', 'heartwarming', 'inspiring', 'hopeful', 'comedy',
             'healing', 'recovery', 'hope', 'optimistic', 'positive', 'comforting'
         ],
+
+        # Coming-of-age themes
+        'coming-of-age': [
+            'coming of age', 'coming-of-age', 'teenager', 'teenage', 'teen', 'adolescence',
+            'adolescent', 'youth', 'young adult', 'growing up', 'high school', 'college',
+            'first love', 'self-discovery', 'identity', 'friendship', 'high school drama',
+            'teen drama', 'teen movie', 'teen romance', 'young love', 'innocence', 'puberty',
+            'rite of passage', 'nostalgia', 'childhood', 'loss of innocence', 'bildungsroman'
+        ],
+        'coming of age': [
+            'coming of age', 'coming-of-age', 'teenager', 'teenage', 'teen', 'adolescence',
+            'adolescent', 'youth', 'young adult', 'growing up', 'high school', 'college',
+            'first love', 'self-discovery', 'identity', 'friendship', 'high school drama',
+            'teen drama', 'teen movie', 'teen romance', 'young love', 'innocence'
+        ],
+
+        # LGBTQ+ themes
+        'lgbtq': [
+            'lgbtq', 'lgbt', 'lgbtq+', 'gay', 'lesbian', 'bisexual', 'transgender', 'queer',
+            'homosexuality', 'homosexual', 'same-sex', 'same sex', 'coming out', 'gay romance',
+            'lesbian romance', 'gay love', 'lesbian love', 'non-binary', 'gender identity',
+            'sexual orientation', 'gay rights', 'pride', 'drag', 'drag queen', 'trans'
+        ],
+        'lgbtq+': [
+            'lgbtq', 'lgbt', 'lgbtq+', 'gay', 'lesbian', 'bisexual', 'transgender', 'queer',
+            'homosexuality', 'homosexual', 'same-sex', 'same sex', 'coming out', 'gay romance',
+            'lesbian romance', 'gay love', 'lesbian love', 'non-binary', 'gender identity'
+        ],
+        'lgbt': [
+            'lgbtq', 'lgbt', 'gay', 'lesbian', 'bisexual', 'transgender', 'queer',
+            'homosexuality', 'homosexual', 'same-sex', 'coming out', 'gay romance', 'lesbian romance'
+        ],
+        'gay': [
+            'gay', 'homosexual', 'homosexuality', 'same-sex', 'lgbtq', 'lgbt', 'coming out',
+            'gay romance', 'gay love', 'queer', 'gay rights', 'pride'
+        ],
+        'lesbian': [
+            'lesbian', 'homosexual', 'homosexuality', 'same-sex', 'lgbtq', 'lgbt', 'coming out',
+            'lesbian romance', 'lesbian love', 'queer', 'sapphic', 'wlw'
+        ],
     }
 
     def __init__(self, all_tags: List[str], all_keywords: Optional[List[str]] = None, models_dir: str = "models"):
