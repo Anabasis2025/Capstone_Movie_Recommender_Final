@@ -497,6 +497,10 @@ def get_curated_movies(query_lower: str) -> list:
         'racism', 'lgbtq', 'immigration', 'addiction', 'depression', 'alzheimer'
     ]
 
+    # Check for "holiday" -> map to christmas list (most common intent)
+    if 'holiday' in query_lower and 'christmas' not in query_lower:
+        return CURATED_LISTS['christmas']
+
     for keyword in simple_keywords:
         if keyword in query_lower:
             # Special handling for plural forms

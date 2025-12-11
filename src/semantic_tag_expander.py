@@ -275,6 +275,28 @@ class SemanticTagExpander:
             'lesbian', 'homosexual', 'homosexuality', 'same-sex', 'lgbtq', 'lgbt', 'coming out',
             'lesbian romance', 'lesbian love', 'queer', 'sapphic', 'wlw'
         ],
+
+        # Holiday/Christmas themes
+        'christmas': [
+            'christmas', 'xmas', 'holiday', 'santa claus', 'santa', 'north pole',
+            'christmas eve', 'christmas day', 'winter holiday', 'festive', 'yuletide',
+            'reindeer', 'snowman', 'gift', 'presents', 'christmas tree', 'elf',
+            'miracle', 'family', 'heartwarming', 'feel-good', 'snow', 'winter'
+        ],
+        'holiday': [
+            'christmas', 'holiday', 'xmas', 'santa claus', 'santa', 'festive',
+            'thanksgiving', 'family gathering', 'celebration', 'winter holiday',
+            'heartwarming', 'feel-good', 'family', 'togetherness', 'tradition'
+        ],
+        'halloween': [
+            'halloween', 'horror', 'scary', 'spooky', 'haunted', 'ghost', 'witch',
+            'monster', 'costume', 'trick or treat', 'pumpkin', 'supernatural',
+            'creepy', 'undead', 'zombie', 'vampire', 'werewolf'
+        ],
+        'thanksgiving': [
+            'thanksgiving', 'family', 'holiday', 'gratitude', 'feast', 'turkey',
+            'family gathering', 'reunion', 'tradition', 'heartwarming', 'drama'
+        ],
     }
 
     def __init__(self, all_tags: List[str], all_keywords: Optional[List[str]] = None, models_dir: str = "models"):
